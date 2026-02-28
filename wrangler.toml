@@ -19,4 +19,4 @@ class_name = "SessionObject"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["SessionObject"]
+new_sqlite_classes = ["SessionObject"]
