@@ -73,7 +73,7 @@ function getHTML() {
     <div class="card">
       <h1>EchoMind AI</h1>
       <p>Record your thoughts. Llama 3.3 will summarize them.</p>
-      <button onclick="startRecording()" id="recBtn">🎤 Start Recording</button>
+      <button onclick="startRecording()" id="recBtn">Start Recording</button>
       <div id="status">Ready...</div>
       <div id="result" style="margin-top:20px; white-space: pre-wrap;"></div>
     </div>
