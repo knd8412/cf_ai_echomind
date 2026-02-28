@@ -12,3 +12,7 @@ The following prompts were used to assist in the architectural design and code g
 
 ### Frontend Interaction
 * "Write a React hook for Cloudflare Pages that handles the MediaRecorder API to record 30 seconds of audio and POSTs it to a worker."
+
+### General questions:
+* "How can I configure Cloudflare Workers to support a staging environment using a 'develop' branch for preview deployments?"
+
