@@ -18,6 +18,9 @@
 * **Database:** Cloudflare D1
 * **AI Models:** `@cf/meta/llama-3.3-70b-instruct`, `@cf/openai/whisper`
 
+## 🛠️ Development Workflow
+* We use GitHub Flow. The main branch is for stable production releases. All active development happens on the develop branch, which triggers automatic Preview Deployments on Cloudflare for testing.
+
 ## 📦 Getting Started
 1. Clone the repo: `git clone https://github.com/your-username/cf_ai_echomind.git`
 2. Install dependencies: `npm install`
