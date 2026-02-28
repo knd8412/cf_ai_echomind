@@ -29,40 +29,42 @@ export default {
     if (url.pathname === "/summarize" && request.method === "POST") {
       try {
         let text = "";
+        let sessionId = "default-user";
         const contentType = request.headers.get("content-type") || "";
 
         // Detect if input is raw audio from the record button or standard JSON
         if (contentType.includes("audio") || contentType.includes("webm")) {
           const audioData = await request.arrayBuffer();
-          // Use Whisper to turn audio into text before summarizing
-          const whisperRes = await env.AI.run('@cf/openai/whisper', { 
-            audio: [...new Uint8Array(audioData)] 
+          
+          // FIX 1: Use Array.from instead of the spread syntax to prevent stack overflow errors
+          const whisperRes = await env.AI.run('@cf/openai/whisper', {
+            audio: Array.from(new Uint8Array(audioData))
           });
           text = whisperRes.text;
         } else {
           const body = await request.json();
           text = body.text;
+          sessionId = body.sessionId || sessionId;
         }
 
-        if (!text) throw new Error("No text detected");
-
-        // Save to Memory using Durable Objects
-        const id = env.SESSION_STATE.idFromName("global-user");
+        // 1. Get Memory from Durable Object
+        const id = env.SESSION_STATE.idFromName(sessionId || "default-user");
         const session = env.SESSION_STATE.get(id);
+        
+        // Update memory
         await session.fetch(request.url, {
           method: "POST",
           body: JSON.stringify({ entry: text })
         });
 
-        // Generate Summary with Llama 3.3
-        const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct', {
+        // FIX 2: Use the exact Cloudflare Llama 3.3 model ID
+        const aiResponse = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
           messages: [
-            { role: "system", content: "You are EchoMind. Summarize this journal entry concisely." },
+            { role: "system", content: "You are EchoMind. Summarize this journal entry and note the user's mood." },
             { role: "user", content: text }
           ]
         });
 
-        // Ensure we extract the .response string to avoid "undefined"
         return new Response(JSON.stringify({ 
           text: text, 
           summary: aiResponse.response || aiResponse 
@@ -71,7 +73,15 @@ export default {
         });
 
       } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        // Return a cleaner error response to the frontend to prevent silent UI failures
+        return new Response(JSON.stringify({ 
+          error: e.message, 
+          text: "Error during processing", 
+          summary: e.message 
+        }), { 
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        });
       }
     }
 
