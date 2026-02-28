@@ -10,7 +10,7 @@ binding = "AI"
 [[d1_databases]]
 binding = "DB"
 database_name = "echomind_db"
-database_id = "your-d1-id-here" # You get this after running 'npx wrangler d1 create echomind_db'
+database_id = "2e406b7b-209c-4887-b49d-dcba64ce858c"
 
 # Durable Objects (for Session Memory)
 [[durable_objects.bindings]]
